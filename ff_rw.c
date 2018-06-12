@@ -33,7 +33,8 @@ int main(int argc, char* argv[])
 	}
 
 	/*以追加的方式打开指定的二进制文件*/
-	fp1=fopen(filename,"ab");
+	//fp1=fopen(filename,"ab");
+	fp1=fopen(filename,"a");
 	if(fp1==NULL)
 	{
 		printf("fopen %s failed!\n",filename);
@@ -52,7 +53,8 @@ int main(int argc, char* argv[])
 	fclose(fp1);
 	
 	/*从文件中读取员工信息*/
-	fp2=fopen(filename,"rb");
+	//fp2=fopen(filename,"rb");
+	fp2=fopen(filename,"r");
 	if(fp2==NULL)
 	{
 		printf("fopen %s failed!\n",filename);
@@ -102,10 +104,12 @@ int main(int argc, char* argv[])
 	printf("\n更新后的员工信息\n");
 	
 	//为什么这个文件打开失败了
+	//clearerr(fp2);
 	//fp2=fopen(filename,"wb");
-	
+
 	//if(fp2==NULL);
-	if((fp2=fopen(filename,"wb"))==NULL)
+	//if((fp2=fopen(filename,"wb"))==NULL)
+	if((fp2=fopen(filename,"w"))==NULL)
 	{
 		printf("fopen 之前1\n");
 		fprintf(stderr, "fopen error with msg is: %s\n",strerror(errno));
@@ -124,7 +128,8 @@ int main(int argc, char* argv[])
 	}
 	fclose(fp2);
 	
-	if((fp2=fopen(filename,"rb"))==NULL)
+//	if((fp2=fopen(filename,"rb"))==NULL)
+	if((fp2=fopen(filename,"r"))==NULL)
 	{
 		printf("fopen 之前2\n");
 		printf("fopen %s failed\n",filename);
