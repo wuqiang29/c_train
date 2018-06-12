@@ -8,4 +8,5 @@ int main()
 	f1=fopen(fiename,"wb");
 	if(f1==NULL)
 		printf("fopen fialed\n");
+	perror("fopen error");
 }

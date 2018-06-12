@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include<stdio.h>
+#include<string.h>
+#include<errno.h>
+#include<stdlib.h>
 
 struct emploment
 {
@@ -102,13 +102,16 @@ int main(int argc, char* argv[])
 	printf("\n更新后的员工信息\n");
 	
 	//为什么这个文件打开失败了
-	fp1 = fopen(filename,"wb");
+	//fp2=fopen(filename,"wb");
 	
-	if(fp1==NULL);
+	//if(fp2==NULL);
+	if((fp2=fopen(filename,"wb"))==NULL)
 	{
 		printf("fopen 之前1\n");
+		fprintf(stderr, "fopen error with msg is: %s\n",strerror(errno));
+		perror("fopen error");
 		printf("fopen %s failed\n",filename);
-		return 0;
+		//return 0;
 	}
 
 	for(i=0;i<n;i++)
@@ -119,7 +122,7 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
-	fclose(fp1);
+	fclose(fp2);
 	
 	if((fp2=fopen(filename,"rb"))==NULL)
 	{
