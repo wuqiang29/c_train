@@ -1,0 +1,47 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ElemType	hash_t1.c	/^}ElemType;$/;"	t	typeref:struct:__anon1	file:
+Hash	hash_t1.c	/^int Hash(int num)$/;"	f
+HashTable	hash_t1.c	/^}HashTable;$/;"	t	typeref:struct:__anon2	file:
+InitHash	hash_t1.c	/^void InitHash(HashTable *H)$/;"	f
+InsertHash	hash_t1.c	/^void InsertHash(HashTable *H,ElemType e)$/;"	f
+MAX	hash_t1.c	4;"	d	file:
+SearHash	hash_t1.c	/^int SearHash(HashTable H, int key, int *p)$/;"	f
+bsize	fopen_copy.c	7;"	d	file:
+count	hash_t1.c	/^	int count;$/;"	m	struct:__anon2	file:
+elem	hash_t1.c	/^	ElemType *elem;$/;"	m	struct:__anon2	file:
+emp	ff_rw.c	/^struct emploment emp[20];$/;"	v	typeref:struct:emploment
+emp_r	ff_rw.c	/^struct emploment emp_r[20];$/;"	v	typeref:struct:emploment
+emploment	ff_rw.c	/^struct emploment$/;"	s	file:
+left	xunhuanyiwei.c	/^int left(unsigned value, int n)$/;"	f
+main	creat_file.c	/^int main(int argc, char* argv[])$/;"	f
+main	ff_rw.c	/^int main(int argc, char* argv[])$/;"	f
+main	fgetc_test.c	/^int main(int argc, char* argv[])$/;"	f
+main	fopen_copy.c	/^int main(int argc, char* argv[])$/;"	f
+main	fopen_file.c	/^int main(int argc, char* argv[])$/;"	f
+main	fopen_test.c	/^int main()$/;"	f
+main	hash_t1.c	/^int main(int argc, char* argv[])$/;"	f
+main	hex_binary.c	/^int main(int argc, char *argv[])$/;"	f
+main	high_ave.c	/^void main()$/;"	f
+main	remove_file.c	/^int main(int argc, char* argv[])$/;"	f
+main	rename_1.c	/^int main(int argc, char* argv[])$/;"	f
+main	rename_2.c	/^int main(int argc, char* argv[])$/;"	f
+main	right_in.c	/^int main(int argc, char* argv[])$/;"	f
+main	sanjiang_fram.c	/^int main (int argc, char* argv[])$/;"	f
+main	sanjiao_#.c	/^int main(int argc, char* argv[])$/;"	f
+main	su_number.c	/^int main(int argc, char* argv[])$/;"	f
+main	test_s.c	/^int main(int argc, char* argv[])$/;"	f
+main	test_s.s	/^main:$/;"	l
+main	xunhuanyiwei.c	/^int main(int argc,char* argv[])$/;"	f
+main	yanghui_san.c	/^int main(int argc, char* argv[])$/;"	f
+main	ziyou_luo.c	/^int main()$/;"	f
+name	ff_rw.c	/^	char name[10];$/;"	m	struct:emploment	file:
+name	hash_t1.c	/^	char name[20];$/;"	m	struct:__anon1	file:
+num	hash_t1.c	/^	int num;$/;"	m	struct:__anon1	file:
+right	xunhuanyiwei.c	/^int right(unsigned value,int n)$/;"	f
+salary	ff_rw.c	/^	int salary;$/;"	m	struct:emploment	file:
+size	hash_t1.c	/^	int size;$/;"	m	struct:__anon2	file:
