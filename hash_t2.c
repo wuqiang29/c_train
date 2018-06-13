@@ -89,7 +89,8 @@ void Recreatehashtable(Hashtable *h)
 	if(!p)
 		exit(OVERFLOW);
 	h->elem=p;
-	for(i=0;i<m;i++)
+	//for(i=0;i<m;i++)			//此处应该从新增内存区域进行初始化，因为之前的内存数据是有效数据
+	for(i=count;i<m;i++)
 		h->elem[i].key=NULLKEY;
 	for(p=elem;p<elem+count;p++)
 		Inserthash(h,*p);				
