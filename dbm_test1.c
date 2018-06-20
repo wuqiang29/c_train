@@ -77,14 +77,13 @@ int main(int argc, char *argv[])
 		printf("Data retrieved\n");
 		memcpy(&item_retrieved,data_datum.dptr,data_datum.dsize);
 		printf("recieve items :%s %d %s\n",item_retrieved.misc_chars,item_retrieved.any_integer,item_retrieved.more_chars);
-	} else {	
+	}
+	else {	
 		printf("no data find for key %s",key_to_use);
 	}
 	
 	dbm_close(dbm_ptr);
 	exit(1);
-
-	
 }
 
 //gcc -o dbm_test1  dbm_test1.c -lgdbm -lgdbm_compat

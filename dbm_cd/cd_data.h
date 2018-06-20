@@ -21,3 +21,22 @@ typedef struct {
 	int track_no;
 	char track_txt[TRACK_TTEXT_LEN + 1];	
 } cdt_entry;
+
+/*Initialization and terminatiaon functions*/
+int database_initialize(const int new_database);
+void database_close(void);
+
+/* two for simple data retrieval */
+cdc_entry get_cdc_entry(const char *cd_catalog_ptr)
+cdt_entry get_cdt_entry(const char *cd_catalog_ptr, const int track_no);
+
+/* two for data addition */
+int add_cdc_entry(const cdc_entry entry_to_add);
+int add_cdt_entry(const cdt_entry entry_to_add);
+
+/* two for data deletion*/
+int del_cdc_entry(const char *cd_catalog_ptr);
+int del_cdt_entry(const char *cd_catalog_ptr, const int track_no);
+
+/* one search functions */
+cdc_entry search_cdc_entry(const char *cd_catalog_ptr, int *first_call_ptr);
