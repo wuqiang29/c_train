@@ -27,7 +27,7 @@ int database_initialize(const int new_database);
 void database_close(void);
 
 /* two for simple data retrieval */
-cdc_entry get_cdc_entry(const char *cd_catalog_ptr)
+cdc_entry get_cdc_entry(const char *cd_catalog_ptr);
 cdt_entry get_cdt_entry(const char *cd_catalog_ptr, const int track_no);
 
 /* two for data addition */

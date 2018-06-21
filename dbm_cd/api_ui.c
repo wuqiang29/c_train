@@ -12,7 +12,7 @@
 
 #define TMP_STRING_LEN	125
 
-typedef enum {
+typedef enum{
 	mo_invalid,
 	mo_add_cat,
 	mo_add_tracks,
@@ -21,10 +21,23 @@ typedef enum {
 	mo_list_cat_tracks,
 	mo_del_tracks,
 	mo_count_entries,
-	mo_exit
+	mo_exit,
 }menu_options;
 
-
+static int command_mode(int argc, char *argv[]);
+static void announce(void);
+static menu_options show_menu(const cdc_entry *current_cdc);
+static int get_confirm(const char *question);
+static int enter_new_cat_entry(cdc_entry *entry_to_update);
+static void enter_new_track_entries(const cdc_entry *entry_to_add_to);
+static void del_cat_entry(const cdc_entry *entry_to_delete);
+static void del_track_entries(const cdc_entry *entry_to_delete);
+static cdc_entry find_cat(void);
+static void list_tracks(const cdc_entry *entry_to_use);
+static void count_all_entries(void);
+static void display_cdc(const cdc_entry *cdc_to_show);
+static void display_cdt(const cdt_entry *cdt_to_show);
+static void strip_return(char *string_to_strip);
 
 int main(int argc, char* argv[])
 {
@@ -44,11 +57,11 @@ int main(int argc, char* argv[])
 	if(!database_initialize(0)) {
 		fprintf(stderr,"Sorry, unale to initialize database\n");
 		fprintf(stderr,"To create a new database use %s -i\n",argv[0]);
-		exit(EXIT_FAILUERE);
+		exit(EXIT_FAILURE);
 	}
 	
 	while(current_option != mo_exit) {
-		current_option = show_menu(&current_cdc_entry)
+		current_option = show_menu(&current_cdc_entry);
 		
 		switch(current_option) {
 			case mo_add_cat:
@@ -60,10 +73,29 @@ int main(int argc, char* argv[])
 				}
 				break;
 			case mo_add_tracks:
-				enter_new_track_enties(&current_cdc_entry);
+				enter_new_track_entries(&current_cdc_entry);
 				break;
 			case mo_del_cat:
-			
+				del_cat_entry(&current_cdc_entry);
+				break;
+			case mo_find_cat:
+				current_cdc_entry = find_cat();
+				break;
+			case mo_list_cat_tracks:
+				list_tracks(&current_cdc_entry);
+			case mo_del_tracks:
+				del_track_entries(&current_cdc_entry);
+				break;
+			case mo_count_entries:
+				count_all_entries();
+				break;
+			case mo_exit:
+				break;
+			case mo_invalid:
+				break;
+				
+			default:
+				break;
 		}
 	}
 	database_close();
@@ -103,7 +135,11 @@ static menu_options show_menu(const cdc_entry *cdc_selected)
 				case '1':option_chosen = mo_add_cat;break;			
 				case '2':option_chosen = mo_find_cat;break;
 				case '3':option_chosen = mo_count_entries;break;
+				case '4':option_chosen = mo_add_tracks;break;
+				case '5':option_chosen = mo_del_cat;break;
+				case '6':option_chosen = mo_list_cat_tracks;break;
 				case 'q':option_chosen = mo_exit;break;
+				
 			}
 		} else {
 			printf("\n\n");
@@ -118,7 +154,7 @@ static menu_options show_menu(const cdc_entry *cdc_selected)
 				case '1':option_chosen = mo_add_cat;break;
 				case '2':option_chosen = mo_find_cat;break;
 				case '3':option_chosen = mo_count_entries;break;
-				case '4':option_chosen = mo_exit;break;
+				case 'q':option_chosen = mo_exit;break;
 			}			
 		}
 	}/*while*/
@@ -131,6 +167,8 @@ static int get_confirm(const char* question)
 	printf("%s",question);
 	
 	fgets(tmp_str,TMP_STRING_LEN,stdin);
+	
+	//printf("tmp_str is [%s]\n",tmp_str);
 	if(tmp_str[0] == 'Y' || tmp_str[0] == 'y') {
 		return 1;
 	}
@@ -144,7 +182,7 @@ static int enter_new_cat_entry(cdc_entry *enter_to_update)
 {
 	cdc_entry new_entry;
 	char tmp_str[TMP_STRING_LEN + 1];
-	memset(&new_entry,0x00,sizeof(cdc_entry));
+	memset(&new_entry,'\0',sizeof(cdc_entry));
 	
 	printf("Enter catalog entry:\n");
 	(void)fgets(tmp_str,TMP_STRING_LEN,stdin);
@@ -166,7 +204,7 @@ static int enter_new_cat_entry(cdc_entry *enter_to_update)
 	strip_return(tmp_str);
 	strncpy(new_entry.artist,tmp_str,CAT_ARTIST_LEN - 1);
 	
-	printf(\nnew catalog entry is:-\n);
+	printf("\nnew catalog entry is:-\n");
 	display_cdc(&new_entry);
 	if(get_confirm("add this entry ?")) {
 		memcpy(enter_to_update,&new_entry,sizeof(cdc_entry));
@@ -178,16 +216,16 @@ static int enter_new_cat_entry(cdc_entry *enter_to_update)
 /*
 *输入曲目项信息
 */
-static void enter_new_track_enties(const cdt_entry *entry_to_add_to)
+static void enter_new_track_entries(const cdc_entry *entry_to_add_to)
 {
-	cdt_entry new_entry, existing_track;
+	cdt_entry new_track, existing_track;
 	char tmp_str[TMP_STRING_LEN + 1];
 	int track_no = 1;
 	if(entry_to_add_to->catalog[0] == '\0') return ;
 	
 	printf("\nUpdating tracks for %s\n",entry_to_add_to->catalog);
 	printf("Press return to leave existing description unchanged,\n");
-	printf(" a single d to delete this and remaining tracks,\n");
+	printf("a single d to delete this and remaining tracks,\n");
 	printf("or new track description\n");
 	
 	while(1) {
@@ -204,7 +242,7 @@ static void enter_new_track_enties(const cdt_entry *entry_to_add_to)
 		fgets(tmp_str,TMP_STRING_LEN,stdin);
 		strip_return(tmp_str);
 		if(strlen(tmp_str) == 0) {
-			if(existing_track[0] == '\0') {
+			if(existing_track.catalog[0] == '\0') {
 				/* no existing entry, so finished adding */
 				break;
 			}
@@ -214,7 +252,7 @@ static void enter_new_track_enties(const cdt_entry *entry_to_add_to)
 				continue;
 			}
 		}
-		if(strlen(tmp_str) == 1) && tmp_str[0] == 'd') {
+		if(strlen(tmp_str) == 1 && tmp_str[0] == 'd') {
 			/* delete this and remaining tracks */
 			while (del_cdt_entry(entry_to_add_to->catalog, track_no)) {
 				track_no++;
@@ -245,8 +283,10 @@ static void del_cat_entry(const cdc_entry *entry_to_delete)
 	if(get_confirm("Delete this entry and all it's tracks? ")) {
 		do {
 			delete_ok = del_cdt_entry(entry_to_delete->catalog, track_no);
+			sleep(2);
+			printf("standby\n");
 			track_no++;
-		} while(delete_ok)
+		} while(delete_ok);
 			
 		if(!del_cdc_entry(entry_to_delete->catalog)) {
 			fprintf(stderr,"Failed to delete entry\n");
@@ -335,7 +375,7 @@ static void list_tracks(const cdc_entry *entry_to_use)
 /*
 *统计所有曲目数量
 */
-static void count_all_entres(void)
+static void count_all_entries(void)
 {
 	int cd_entries_found = 0;
 	int track_entries_found = 0;
@@ -377,10 +417,10 @@ static void strip_return(char *string_to_strip)
 */
 static void display_cdc(const cdc_entry *cdc_to_show)
 {
-	printf("Catalog:%s\n",cdc_to_show.catalog);
-	printf("\ttitle:%s\n",cdc_to_show.title);
-	printf("\ttype:%s\n",cdc_to_show.type);
-	printf("\tartist:%s\n",cdc_to_show.artist);
+	printf("Catalog:%s\n",cdc_to_show->catalog);
+	printf("\ttitle:%s\n",cdc_to_show->title);
+	printf("\ttype:%s\n",cdc_to_show->type);
+	printf("\tartist:%s\n",cdc_to_show->artist);
 }
 
 /*
@@ -400,13 +440,13 @@ static  int command_mode(int argc, char *argv[])
 	
 	/* these externals used by getopt */
 	extern char *optarg;
-	extern optind, opterr, optopt;
+	extern int optind, opterr, optopt;
 	
 	while((c = getopt(argc, argv, ":i")) != -1) {
 		switch(c) {
-			case i: 
+			case 'i': 
 			if(!database_initialize(1)) {
-				result = EXIT_FAILUERE;
+				result = EXIT_FAILURE;
 				fprintf(stderr,"Failed to initialize database\n");
 			}
 			break;
@@ -414,7 +454,7 @@ static  int command_mode(int argc, char *argv[])
 			case '?':
 			default:
 				fprintf(stderr,"Usage: %s [-i]\n",prog_name);
-				result = EXIT_FAILUERE;
+				result = EXIT_FAILURE;
 			break;
 		}
 	}
