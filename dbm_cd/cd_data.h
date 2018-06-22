@@ -4,7 +4,7 @@
 #define	CAT_TYPE_LEN	30
 #define	CAT_ARTIST_LEN	70
 
-//标题数据项
+//标题数据项,涉及唱片基本信息，如唱片名称，音乐类型，艺术家名字等
 typedef struct {
 	char catalog[CAT_CAT_LEN + 1];
 	char title[CAT_TITLE_LEN + 1];
@@ -15,7 +15,7 @@ typedef struct {
 #define TRACK_CAT_LEN	CAT_CAT_LEN
 #define TRACK_TTEXT_LEN	70
 
-//曲目数据项
+//曲目数据项，可以理解为某张唱片内所包含的所有单曲信息
 typedef struct {
 	char catalog[TRACK_CAT_LEN + 1];
 	int track_no;
