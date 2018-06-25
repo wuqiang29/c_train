@@ -86,6 +86,9 @@ cdc_entry get_cdc_entry(const char *cd_catalog_ptr)
 	local_data_datum = dbm_fetch(cdc_dbm_ptr,local_key_datum);
 	if(local_data_datum.dptr) {
 		memcpy(&entry_to_return,(char *)local_data_datum.dptr,local_data_datum.dsize);
+		printf("get_cdc_entry success \n");
+	} else {
+		printf("get_cdc_entry nothing \n");
 	}
 	return entry_to_return;
 }
@@ -96,7 +99,7 @@ cdc_entry get_cdc_entry(const char *cd_catalog_ptr)
 cdt_entry get_cdt_entry(const char *cd_catalog_ptr, const int track_no)
 {
 	cdt_entry entry_to_return;
-	char entry_to_find[CAT_CAT_LEN + 10];   //+10?
+	char entry_to_find[CAT_CAT_LEN + 10];   //+10 是因为这里要拼接一个%d的数字进来
 	
 	datum local_data_datum;
 	datum local_key_datum;
@@ -107,15 +110,23 @@ cdt_entry get_cdt_entry(const char *cd_catalog_ptr, const int track_no)
 	if(!cd_catalog_ptr)	return entry_to_return;
 	if(strlen(cd_catalog_ptr) >= CAT_CAT_LEN)	return entry_to_return;
 	
-	memset(entry_to_find,'\0',sizeof(local_data_datum));
-	sprintf(entry_to_find,"%s%d",cd_catalog_ptr,track_no);
-	
+	memset(entry_to_find,'\0',sizeof(entry_to_find));
+	strcpy(entry_to_find,cd_catalog_ptr);
+	//sprintf(entry_to_find,"%s%d",cd_catalog_ptr,track_no);
+	printf("entry_to_find [%s] \n",entry_to_find);
+		
 	local_key_datum.dptr = (void*)entry_to_find;
 	local_key_datum.dsize = sizeof(entry_to_find);
 	
-	local_data_datum = dbm_fetch(cdt_dbm_ptr,local_key_datum);
+	memset(&local_data_datum,'\0',sizeof(local_data_datum));
+//	local_data_datum = dbm_fetch(cdt_dbm_ptr,local_key_datum);	
+	local_data_datum = dbm_fetch(cdc_dbm_ptr,local_key_datum);
 	if(local_data_datum.dptr) {
 		memcpy(&entry_to_return,(char*)local_data_datum.dptr,local_data_datum.dsize);
+		printf("get_cdt_entry entry_to_return [%s]\n",entry_to_return.catalog);	
+		printf("get_cdt_entry nothing \n");
+	} else {		
+		printf("get_cdt_entry nothing tracks ...\n");		
 	}
 	return entry_to_return;
 }
@@ -157,6 +168,9 @@ int add_cdt_entry(const cdt_entry  entry_to_add)
 	char key_to_add[CAT_CAT_LEN + 1];
 	datum local_data_datum;
 	datum local_key_datum;
+	datum data_datum;
+	cdt_entry entry_to_return;
+	
 	int result;
 	
 	if(!cdc_dbm_ptr || !cdt_dbm_ptr)	return 0;
@@ -164,6 +178,7 @@ int add_cdt_entry(const cdt_entry  entry_to_add)
 	
 	memset(key_to_add,'\0',sizeof(key_to_add));
 	sprintf(key_to_add,"%s%d",entry_to_add.catalog,entry_to_add.track_no);
+	printf("key_to_add is [%s] \n",key_to_add);
 	
 	local_key_datum.dptr = (void*)key_to_add;
 	local_key_datum.dsize = sizeof(key_to_add);
@@ -171,8 +186,28 @@ int add_cdt_entry(const cdt_entry  entry_to_add)
 	local_data_datum.dsize = sizeof(entry_to_add);
 	
 	result = dbm_store(cdt_dbm_ptr,local_key_datum,local_data_datum,DBM_REPLACE);
-	if(result)	return 1;
-	return 0;
+	
+	if(result == 0)
+	{
+		printf("for test dbm_fetch out \n");
+		
+		memset(&data_datum,'\0',sizeof(data_datum));
+		data_datum = dbm_fetch(cdt_dbm_ptr,local_key_datum);
+		if(data_datum.dptr) {
+			
+			printf("dbm_fetch out success\n");
+			memset(&entry_to_return,'\0',sizeof(entry_to_return));
+			memcpy(&entry_to_return,data_datum.dptr,data_datum.dsize);
+			printf("get_cdt_entry entry_to_return catalog :[%s], entry_to_return.track_no:[%d],entry_to_return.track_txt:[%s]\n",entry_to_return.catalog,entry_to_return.track_no,entry_to_return.track_txt);
+			
+		}
+		
+		printf("dbm_store success result [%d]\n",result);
+		return 1;
+	}else {
+		printf("dbm_store failed result [%d]\n",result);		
+		return 0;
+	}
 }
 
 /*
@@ -222,9 +257,8 @@ int del_cdt_entry(const char *cd_catalog_ptr, const int track_no)
 }
 
 /*
-*搜索函数，在不知道关键字的情况下扫码所有的dbm记录项
+*搜索函数，在不知道关键字的情况下扫码所有的dbm记录项，查询到一个存在的entry就跳出来返回一个entry
 */
-
 cdc_entry search_cdc_entry(const char* cd_catalog_ptr,int *first_call_ptr)
 {
 	static int local_first_call = 1;
@@ -257,16 +291,17 @@ cdc_entry search_cdc_entry(const char* cd_catalog_ptr,int *first_call_ptr)
 			
 			if(local_data_datum.dptr) {
 				memcpy(&entry_to_return,local_data_datum.dptr,local_data_datum.dsize);	
-	
+				/*检查当前标题项目是否包含搜索字符串*/
 				/*check if the search string occurs in the entry */		
 				if (!strstr(entry_to_return.catalog,cd_catalog_ptr))
 				{
 					memset(&entry_to_return,'\0',sizeof(entry_to_return));
 					local_key_datum = dbm_nextkey(cdc_dbm_ptr);				
-				}				
+				}	
+				printf("包含标题项；[%s]\n",entry_to_return.catalog);
 			}		
 		}
-	} while(local_key_datum.dptr && local_data_datum.dptr && (entry_to_return.catalog[0] == '\0'));
+	} while(local_key_datum.dptr && local_data_datum.dptr && (entry_to_return.catalog[0] == '\0')); //继续检索的条件
 	return entry_to_return;
 }
 

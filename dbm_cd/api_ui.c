@@ -83,6 +83,7 @@ int main(int argc, char* argv[])
 				break;
 			case mo_list_cat_tracks:
 				list_tracks(&current_cdc_entry);
+				break;
 			case mo_del_tracks:
 				del_track_entries(&current_cdc_entry);
 				break;
@@ -146,6 +147,7 @@ static menu_options show_menu(const cdc_entry *cdc_selected)
 			printf("1-add new CD\n");
 			printf("2-search for a CD\n");
 			printf("3-count the CDs and tracks int the database\n");
+			printf("4-list the CDs and catalog int the database\n");
 			printf("q-quit\n");
 			printf("\nOption: \n");
 			
@@ -218,18 +220,21 @@ static int enter_new_cat_entry(cdc_entry *enter_to_update)
 */
 static void enter_new_track_entries(const cdc_entry *entry_to_add_to)
 {
-	cdt_entry new_track, existing_track;
+	cdt_entry new_track, existing_track, entry_to_return;
 	char tmp_str[TMP_STRING_LEN + 1];
 	int track_no = 1;
 	if(entry_to_add_to->catalog[0] == '\0') return ;
 	
+	memset(&entry_to_return,'\0',sizeof(entry_to_return));
+	
 	printf("\nUpdating tracks for %s\n",entry_to_add_to->catalog);
 	printf("Press return to leave existing description unchanged,\n");
-	printf("a single d to delete this and remaining tracks,\n");
+	printf("single d to delete this and remaining tracks,\n");
 	printf("or new track description\n");
 	
 	while(1) {
 		memset(&new_track,'\0',sizeof(new_track));
+		memset(&existing_track,'\0',sizeof(existing_track));
 		existing_track = get_cdt_entry(entry_to_add_to->catalog,track_no);
 		
 		if(existing_track.catalog[0]) {
@@ -252,6 +257,7 @@ static void enter_new_track_entries(const cdc_entry *entry_to_add_to)
 				continue;
 			}
 		}
+
 		if(strlen(tmp_str) == 1 && tmp_str[0] == 'd') {
 			/* delete this and remaining tracks */
 			while (del_cdt_entry(entry_to_add_to->catalog, track_no)) {
@@ -259,6 +265,7 @@ static void enter_new_track_entries(const cdc_entry *entry_to_add_to)
 			}
 			break;
 		}
+		
 		/*添加一个新的曲目或者更新一个现有曲目*/
 		strncpy(new_track.track_txt, tmp_str, TRACK_TTEXT_LEN - 1);
 		strcpy(new_track.catalog, entry_to_add_to->catalog);
@@ -267,6 +274,10 @@ static void enter_new_track_entries(const cdc_entry *entry_to_add_to)
 			fprintf(stderr,"Failed to add new track\n");
 			break;
 		}
+		
+		/*for test dbm_fetch out */
+	//	entry_to_return = get_cdt_entry()
+		
 		track_no++;
 	} /*while*/
 }
@@ -282,7 +293,7 @@ static void del_cat_entry(const cdc_entry *entry_to_delete)
 	display_cdc(entry_to_delete);
 	if(get_confirm("Delete this entry and all it's tracks? ")) {
 		do {
-			delete_ok = del_cdt_entry(entry_to_delete->catalog, track_no);
+			delete_ok = del_cdt_entry(entry_to_delete->catalog, track_no);  //success 0
 			sleep(2);
 			printf("standby\n");
 			track_no++;
@@ -335,6 +346,7 @@ static cdc_entry find_cat(void)
 	} while(!string_ok);
 	
 	while(!entry_selected) {
+		printf("空字符串查询[%s]\n",tmp_str);
 		item_found = search_cdc_entry(tmp_str, &first_call);
 		if(item_found.catalog[0] != '\0') {
 			any_entry_found = 1;
@@ -363,9 +375,13 @@ static void list_tracks(const cdc_entry *entry_to_use)
 	display_cdc(entry_to_use);
 	printf("\nTracks\n");
 	do {
+		
+		printf("current_cdc catalog is [%s]\n",entry_to_use->catalog);
 		entry_found = get_cdt_entry(entry_to_use->catalog,track_no);
+		printf("display_cdt entry_found [%s] \n",entry_found.catalog);		
 		if(entry_found.catalog[0]) {
 			display_cdt(&entry_found);
+			printf("display_cdt\n");
 			track_no++;
 		}
 	} while(entry_found.catalog[0]);
@@ -395,6 +411,7 @@ static void count_all_entries(void)
 				if(cdt_found.catalog[0]) {
 					track_entries_found++;
 					track_no++;
+					//printf("find tracks [%s]\n",);
 				}
 			} while(cdt_found.catalog[0]);
 		}
