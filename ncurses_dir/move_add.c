@@ -37,11 +37,15 @@ int main(int argc, char *argv[])
 
 	attron(A_DIM);
 	scan_ptr = witch_two + strlen(witch_two) - 1;
-	while (scan_ptr != witch_two) {
-
-		move(13,10);
-		insch(*scan_ptr--);
-	}
+	//while(scan_ptr != witch_two) {
+	//	move(13,10);
+	//	insch(*scan_ptr--);
+	//}
+	
+	move(13,10);
+	
+	printw("%s",witch_two);	
+	
 	attroff(A_DIM);
 	refresh();
 	sleep(1);
@@ -49,9 +53,9 @@ int main(int argc, char *argv[])
 	move(LINES - 1, COLS - 1);
 	
 	refresh();
-	sleep(1);
-	while(1)
-	{}
+	sleep(10);
+	//while(1)
+	//{}
 	
 	endwin();
 	exit(EXIT_SUCCESS);
