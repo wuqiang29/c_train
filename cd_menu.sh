@@ -1,12 +1,11 @@
 #!/bin/sh
 
-
 #global variable
 menu_choice=""
 current_cd=""
 title_file="title.cdb"
 tracks_file="tracks.cdb"
-temp_file=/home/wuqiang/share/test_we/c_train/cdb.$$
+temp_file=/home/wuqiang/share/c_train/c_train/cdb.$$
 trap 'rm -f $temp_file' EXIT
 
 get_return() {
@@ -245,6 +244,10 @@ remove_records() {
 		get_confirm && {
 			grep -v "^${cdcatnum}," $title_file > $temp_file
 			mv $temp_file $title_file
+			
+			grep -v "^${cdcatnum}," $tracks_file > $temp_file
+			mv $temp_file $title_file
+			
 			cdcatnum=""
 			echo Entry removed
 		}
