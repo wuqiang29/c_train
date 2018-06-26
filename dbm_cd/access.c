@@ -198,10 +198,8 @@ int add_cdt_entry(const cdt_entry  entry_to_add)
 			printf("dbm_fetch out success\n");
 			memset(&entry_to_return,'\0',sizeof(entry_to_return));
 			memcpy(&entry_to_return,data_datum.dptr,data_datum.dsize);
-			printf("get_cdt_entry entry_to_return catalog :[%s], entry_to_return.track_no:[%d],entry_to_return.track_txt:[%s]\n",entry_to_return.catalog,entry_to_return.track_no,entry_to_return.track_txt);
-			
-		}
-		
+			printf("get_cdt_entry entry_to_return catalog :[%s], entry_to_return.track_no:[%d],entry_to_return.track_txt:[%s]\n",entry_to_return.catalog,entry_to_return.track_no,entry_to_return.track_txt);		
+		}		
 		printf("dbm_store success result [%d]\n",result);
 		return 1;
 	}else {
