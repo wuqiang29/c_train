@@ -3,6 +3,8 @@
 /*add artist table*/
 
 /*上面是sql文件的三种注释方便，注意第一种注释方法双长线(--)后必须要跟一个空格*/
+
+/*如下操作情况3个列表*/
 delete from track;
 delete from cd;
 delete from artist;
@@ -36,14 +38,16 @@ insert into track(cd_id,track_id,title) values(5,1,'Melodia Aficana (part 1)');
 insert into track(cd_id,track_id,title) values(5,2,'I due fiumi');
 insert into track(cd_id,track_id,title) values(5,3,'In un\'altra vita');
 
-insert into track(cd_id,track_id,title) values(6,11,'Closer');
-insert into track(cd_id,track_id,title) values(6,12,'Feel The Sun');
-insert into track(cd_id,track_id,title) values(7,13,'Ten years');
+insert into track(cd_id,track_id,title) values(6,1,'Closer');
+insert into track(cd_id,track_id,title) values(6,2,'Feel The Sun');
+insert into track(cd_id,track_id,title) values(7,1,'Ten years');
 
 
  
 /* 
 SELECT artist.name, cd.title AS "CD Title", track.track_id, track.title AS "Track" FROM artist, cd, track WHERE artist.id = cd.artist_id AND track.cd_id = cd.id AND track.track_id < 3
+执行如下命令自动导入数据
+\. insert_data.sql
 */
  
  
