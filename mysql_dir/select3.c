@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	int first_row = 1;
 	
 	mysql_init(&my_connection);
-	if(mysql_real_connect(&my_connection,"localhost","wuqiang","123456","wuqiang",0,NULL,0))
+	if(mysql_real_connect(&my_connection,"localhost","wuqiang","nE7jA%5m","wuqiang",0,NULL,0))
 	{
 		printf("connect mysql success\n");		
 		printf("database client version %s\n",mysql_get_client_info());
@@ -28,8 +28,7 @@ int main(int argc, char *argv[])
 		res = mysql_query(&my_connection,"select childno, fname,age from children where age >12");
 		if(res)
 		{
-			printf("select error；%s\n",mysql_error(&my_connection));
-	
+			printf("select error；%s\n",mysql_error(&my_connection));	
 		} else 
 		{
 			//printf("最近执行的查询信息%s\n",mysql_info(&my_connection));
@@ -117,5 +116,5 @@ void display_header()
 }
 
 //编译选项
-//gcc  select2.c -lmysqlclient -o select2
+//gcc  select3.c -lmysqlclient -o select3
 //gcc -I/usr/include/mysql insert2.c -lmysqlclient -o insert2

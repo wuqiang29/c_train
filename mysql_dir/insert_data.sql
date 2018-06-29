@@ -4,10 +4,25 @@
 
 /*上面是sql文件的三种注释方便，注意第一种注释方法双长线(--)后必须要跟一个空格*/
 
-/*如下操作情况3个列表*/
+/*如下delete from 清空三个列表中的数据*/
 delete from track;
 delete from cd;
 delete from artist;
+
+/*如下删除三个列表*/
+DROP table track;
+DROP table cd;
+DROP table artist;
+
+
+
+/*创建表*/
+CREATE TABLE cd(id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,title VARCHAR(70) NOT NULL,artist_id INTEGER NOT NULL,catalogue VARCHAR(30) NOT NULL,notes VARCHAR(100));
+
+CREATE TABLE track(cd_id INTEGER NOT NULL,track_id INTEGER NOT NULL,title VARCHAR(70),PRIMARY KEY(cd_id,track_id));
+
+CREATE TABLE artist(id INTEGER AUTO_INCREMENT  NOT NULL PRIMARY KEY,name VARCHAR(100) NOT NULL);
+
 
 
 insert into artist(id,name) values(1,'Pink Floyd');
@@ -46,6 +61,12 @@ insert into track(cd_id,track_id,title) values(7,1,'Ten years');
  
 /* 
 SELECT artist.name, cd.title AS "CD Title", track.track_id, track.title AS "Track" FROM artist, cd, track WHERE artist.id = cd.artist_id AND track.cd_id = cd.id AND track.track_id < 3
+
+insert into t_visual_user_domain(`user_id`,`domain`,`group`) select id,'www.baidu.com' as domain,`group` from t_visual_user;
+
+
+SELECT DISTINCT artist.id, cd.id FROM artist, cd WHERE artist.id = cd.artist_id AND (artist.name LIKE '%%Symphony%%' OR cd.title LIKE '%%Symphony%%' OR cd.catalogue LIKE '%%Symphony%%')
+
 执行如下命令自动导入数据
 \. insert_data.sql
 */

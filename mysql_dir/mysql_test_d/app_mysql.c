@@ -34,7 +34,7 @@ void database_end()
 }
 
 /*Find or create an artist_id for the given string */
-int get_artist_id(const char *artist)
+static int get_artist_id(const char *artist)
 {
 	MYSQL_RES *res_ptr;
 	MYSQL_ROW mysqlrow;
@@ -53,6 +53,7 @@ int get_artist_id(const char *artist)
 	if(res)
 	{
 		fprintf(stderr,"SELECT errno %d:%s\n",mysql_errno(&my_connection),mysql_error(&my_connection));
+		printf("have not find aritst %s, then add artist_id for %s\n",es,es);
 		
 	} else {
 		res_ptr = mysql_store_result(&my_connection);
@@ -104,13 +105,15 @@ int add_tracks(struct current_tracks_st *tracks)
 	char es[250];
 	int i, res;
 	
-	if(!dbconnected); return 0;
+	if(!dbconnected) return 0;
 	i = 0;
+
 	while(tracks->track[i][0])
 	{
 		mysql_escape_string(es,tracks->track[i],strlen(tracks->track[i]));
 		sprintf(is,"INSERT INTO track(cd_id,track_id,title) VALUES(%d,%d,'%s')",tracks->cd_id,i+1,es);
 		
+		printf("%s\n",is);
 		res = mysql_query(&my_connection,is);
 		if (res) {
 			fprintf(stderr,"Insert error %d: %s\n",mysql_errno(&my_connection),mysql_error(&my_connection));
@@ -139,9 +142,10 @@ int add_cd(const char *artist, const char *title, const char *catalogue, int *cd
 	
 	mysql_escape_string(es,title,strlen(title));	//保护cd标题中的特殊字符
 	
-	sprintf(is,"INSERT INTO cd(title,artist_id,catalogue) VALUES('%s','%d','%s')",es,artist_id,catalogue);
+	sprintf(is,"INSERT INTO cd(title,artist_id,catalogue) VALUES('%s','%d','%s')",es,artist_id,catalogue);//这里没有配置cd表中的id值，是因为id有AUTO_INCREMENT属性
 	res = mysql_query(&my_connection,is);	
 	if (res) {
+		printf("************************\n");
 		fprintf(stderr,"Insert error %d: %s\n",mysql_errno(&my_connection),mysql_error(&my_connection));
 		return 0;
 	}
@@ -156,6 +160,7 @@ int add_cd(const char *artist, const char *title, const char *catalogue, int *cd
 		{
 			if((mysqlrow = mysql_fetch_row(res_ptr)));
 				sscanf(mysqlrow[0],"%d",&new_cd_id);
+				printf("new_cd_id is [%d]\n",new_cd_id);
 		}
 		mysql_free_result(res_ptr);
 	}
@@ -233,6 +238,8 @@ int get_cd_tracks(int cd_id, struct current_tracks_st *dest)
 	
 	sprintf(qs,"SELECT track_id, title FROM track WHERE track.cd_id = %d ORDER BY track_id",cd_id);
 
+	printf("%s\n",qs);
+	
 	res = mysql_query(&my_connection,qs);
 	if(res){
 		
@@ -288,7 +295,7 @@ int find_cds(const char *search_str, struct cd_search_st *dest)
 			num_row = mysql_num_rows(res_ptr);
 			if(num_row>0)
 			{
-				while((mysqlrow = mysql_fetch_row(res_ptr)) && i<MAX_CD_RESULT)
+				while((mysqlrow = mysql_fetch_row(res_ptr)) && i<MAX_CD_RESULT)		//从mysql_store_result得到的结构中提取一行，并把它放到一个行结构中， 当数据用完或发生错误时返回NULL
 				{
 					sscanf(mysqlrow[1],"%d",&dest->cd_id[i]);
 					i++;
